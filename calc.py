@@ -8,7 +8,7 @@ class Calculate:
     priorityBracket : int
     logErrorInExpression : str = '''Произошла ошибка при вычислении выражения, возможно, вы ввели что-то не так
     Вот вид ошибки: '''
-    symbolWithOneNumber = ['!','lg','ln']
+    symbolWithOneOperand = ['!','lg','ln']
 
     def __init__(self):
         self.arrayNumber = []
@@ -19,7 +19,7 @@ class Calculate:
     def handlerError(self,error) -> None:
         pass
 
-    def _prioritySymbols(self,next_symbol : str) -> int:
+    def prioritySymbols(self,next_symbol : str) -> int:
         if next_symbol in ['-', '+']:
             return 1
         elif next_symbol in ['*', '/','%']:
@@ -34,10 +34,10 @@ class Calculate:
     
     
 
-    def _doSymbol(self,symbol : str) -> Union[int,float,str]:
-        num1 = 1234567
+    def _doSymbol(self,symbol : str) -> Union[int,float]:
+        num1 = None
         num2 = self.arrayNumber.pop()
-        if not symbol in self.symbolWithOneNumber:
+        if not symbol in self.symbolWithOneOperand:
             num1 = self.arrayNumber.pop()
 
         print(f'{symbol=} {num1=}, {num2=}')
@@ -80,20 +80,21 @@ class Calculate:
             return
         if not self.lastSymbolIsNumber and next_symbol == '-':
             self.arrayNumber.append(0)
+        
         while len(self.arraySymbol) > 0:
             lastSymbol = self.arraySymbol.pop()
-            if self._prioritySymbols(next_symbol) <= self._prioritySymbols(lastSymbol) and lastSymbol != '(':
+            if self.prioritySymbols(next_symbol) <= self.prioritySymbols(lastSymbol) and next_symbol != '(':
                 result = self._doSymbol(lastSymbol)
                 print(result)
                 self.arrayNumber.append(result)
             else:
-                if self.lastSymbolIsNumber and lastSymbol == '(':
-                    self.arraySymbol.append('*')
                 self.arraySymbol.append(lastSymbol)
+                if self.lastSymbolIsNumber and next_symbol == '(':
+                    self.checkSymbol('*')
                 break
+        
         self.arraySymbol.append(next_symbol)
         self.lastSymbolIsNumber = False
-        
     
     def checkNumber(self,nextNumber : int):
         if self.lastSymbolIsNumber:
@@ -108,13 +109,11 @@ class Calculate:
             self.arrayNumber.append(result)
 
     def getAnswerToExpression(self,expression : str) -> Union[int,float,str]:
-        for symbol in allInput:
+        for symbol in expression:
             if symbol in ['1','2','3','4','5','6','7','8','9','0']:
                 self.checkNumber(int(symbol))
             else:
                 self.checkSymbol(symbol)
-        print(self.arrayNumber)
-        print(self.arraySymbol)
         self.doRemainingSymbols()
         return self.arrayNumber[0]
 
