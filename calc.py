@@ -5,7 +5,6 @@ from typing import Union
 
 class Calculate:
     lastSymbolIsNumber : bool
-    priorityBracket : int
     logErrorInExpression : str = '''Произошла ошибка при вычислении выражения, возможно, вы ввели что-то не так
     Вот вид ошибки: '''
     symbolWithOneOperand = ['!','lg','ln']
@@ -14,57 +13,59 @@ class Calculate:
         self.arrayNumber = []
         self.lastSymbolIsNumber = False
         self.arraySymbol = []
-        self.priorityBracket = 5
 
-    def handlerError(self,error) -> None:
-        pass
+    def handlerError(self,error : str) -> None:
+        self.logErrorInExpression += error
+        print(self.logErrorInExpression)
+        exit()
 
-    def prioritySymbols(self,next_symbol : str) -> int:
-        if next_symbol in ['-', '+']:
+    def prioritySymbols(self,symbol : str) -> int:
+        if symbol in ['(']:
+            return 0
+        elif symbol in ['-', '+']:
             return 1
-        elif next_symbol in ['*', '/','%']:
+        elif symbol in ['*', '/','%']:
             return 2
-        elif next_symbol in ['^']:
+        elif symbol in ['^']:
             return 3
-        if next_symbol in ['!','log','ln','lg']:
+        elif symbol in ['!','log','ln','lg']:
             return 4
-        elif next_symbol in ['(']:
-            self.priorityBracket += 1
-            return self.priorityBracket
-    
-    
+        else:
+            self.handlerError(f'Неизвеcтный символ: {symbol}')
 
     def _doSymbol(self,symbol : str) -> Union[int,float]:
-        num1 = None
-        num2 = self.arrayNumber.pop()
-        if not symbol in self.symbolWithOneOperand:
-            num1 = self.arrayNumber.pop()
+        try:
+            num1 = None
+            num2 = self.arrayNumber.pop()
+            if not symbol in self.symbolWithOneOperand:
+                num1 = self.arrayNumber.pop()
 
-        print(f'{symbol=} {num1=}, {num2=}')
-        if symbol == '-':
-            return num1 - num2
-        elif symbol == '+':
-            return num1 + num2
-        elif symbol == '/':
-            if (num2 != 0):
-                return num1 / num2
-            else:
-                self.logErrorInExpression += f'''Деление на 0: {num1}/{num2}!!! '''
-                print(self.logErrorInExpression)
-                exit()
-        elif symbol == '%':
-            if (num2 != 0):
-                return num1 % num2
-            else:
-                self.logErrorInExpression += f'''Деление на ноль: {num1}%{num2}!!! '''
-                print(self.logErrorInExpression)
-                exit()
-        elif symbol == '*':
-            return num1 * num2
-        elif symbol == '^':
-            return num1 ** num2
-        elif symbol == '!':
-            return (math.factorial(num2))
+            # print(f'{symbol=} {num1=}, {num2=}')
+            if symbol == '-':
+                return num1 - num2
+            elif symbol == '+':
+                return num1 + num2
+            elif symbol == '/':
+                if (num2 != 0):
+                    return num1 / num2
+                else:
+                    self.handlerError(f'''Деление на ноль: {num1}/{num2}!!! ''')
+            elif symbol == '%':
+                if (num2 != 0):
+                    return num1 % num2
+                else:
+                    self.handlerError(f'''Деление на ноль: {num1}%{num2}!!! ''')
+            elif symbol == '*':
+                return num1 * num2
+            elif symbol == '^':
+                return num1 ** num2
+            elif symbol == '!':
+                if num2 < 0:
+                    self.handlerError(f'''Пока не умеем строить гамма функции, так что не находим факториал
+    отрицательного числа: !({num2})''')
+                    return (math.factorial(num2))
+        except:
+            self.handlerError('Что-то не так с вводом символов')
         
     def closeBracket(self) -> None:
         currentSymbol = self.arraySymbol.pop()
@@ -76,8 +77,12 @@ class Calculate:
 
     def checkSymbol(self, next_symbol : str) -> None:
         if next_symbol == ')':
-            self.closeBracket()
-            return
+            if self.lastSymbolIsNumber:
+                self.closeBracket()
+                return
+            else:
+                self.handlerError(f'''Неправильно введенное значение в скобках!!! ''')
+
         if not self.lastSymbolIsNumber and next_symbol == '-':
             self.arrayNumber.append(0)
         
@@ -120,6 +125,5 @@ class Calculate:
 main = Calculate()
 
 allInput = input()
-# allInput = '(((1+2)-3)-4)'
 
 print(f'Вот решение выражения: {main.getAnswerToExpression(allInput)}')
