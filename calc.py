@@ -1,23 +1,13 @@
-import numpy as np
-import math
-from typing import Union
+from calculateBasic import *
 
 
-class Calculate:
+class CalculateSmart(CalculateBasic):
     lastSymbolIsNumber : bool
-    logErrorInExpression : str = '''Произошла ошибка при вычислении выражения, возможно, вы ввели что-то не так
-    Вот вид ошибки: '''
     symbolWithOneOperand = ['!','lg','ln']
-
-    def __init__(self):
-        self.arrayNumber = []
-        self.lastSymbolIsNumber = False
-        self.arraySymbol = []
-
-    def handlerError(self,error : str) -> None:
-        self.logErrorInExpression += error
-        print(self.logErrorInExpression)
-        exit()
+    arrayNumber = []
+    lastSymbolIsNumber = False
+    arraySymbol = []
+    
 
     def prioritySymbols(self,symbol : str) -> int:
         if symbol in ['(']:
@@ -35,35 +25,16 @@ class Calculate:
 
     def _doSymbol(self,symbol : str) -> Union[int,float]:
         try:
-            num1 = None
-            num2 = self.arrayNumber.pop()
-            if not symbol in self.symbolWithOneOperand:
+            if symbol in self.symbolWithOneOperand:
                 num1 = self.arrayNumber.pop()
-
-            # print(f'{symbol=} {num1=}, {num2=}')
-            if symbol == '-':
-                return num1 - num2
-            elif symbol == '+':
-                return num1 + num2
-            elif symbol == '/':
-                if (num2 != 0):
-                    return num1 / num2
-                else:
-                    self.handlerError(f'''Деление на ноль: {num1}/{num2}!!! ''')
-            elif symbol == '%':
-                if (num2 != 0):
-                    return num1 % num2
-                else:
-                    self.handlerError(f'''Деление на ноль: {num1}%{num2}!!! ''')
-            elif symbol == '*':
-                return num1 * num2
-            elif symbol == '^':
-                return num1 ** num2
-            elif symbol == '!':
-                if num2 < 0:
-                    self.handlerError(f'''Пока не умеем строить гамма функции, так что не находим факториал
-    отрицательного числа: !({num2})''')
-                    return (math.factorial(num2))
+                print(f'debug: {symbol=} {num1=}')
+                return self.getSampleAnswer(symbol,num1)
+            else:
+                num2 = self.arrayNumber.pop()
+                num1 = self.arrayNumber.pop()
+                print(f'debug: {symbol=} {num1=}, {num2=}')
+                return self.getSampleAnswer(symbol,num1,num2)
+                
         except:
             self.handlerError('Что-то не так с вводом символов')
         
@@ -77,7 +48,7 @@ class Calculate:
 
     def checkSymbol(self, next_symbol : str) -> None:
         if next_symbol == ')':
-            if self.lastSymbolIsNumber:
+            if self.lastSymbolIsNumber: 
                 self.closeBracket()
                 return
             else:
@@ -115,15 +86,17 @@ class Calculate:
 
     def getAnswerToExpression(self,expression : str) -> Union[int,float,str]:
         for symbol in expression:
-            if symbol in ['1','2','3','4','5','6','7','8','9','0']:
+            if symbol in ['1','2','3','4','5','6','7','8','9','0','.',',']:
                 self.checkNumber(int(symbol))
             else:
                 self.checkSymbol(symbol)
         self.doRemainingSymbols()
         return self.arrayNumber[0]
 
-main = Calculate()
 
-allInput = input()
+if __name__ == '__main__':
+    main = CalculateSmart()
 
-print(f'Вот решение выражения: {main.getAnswerToExpression(allInput)}')
+    allInput = input()
+
+    print(f'Вот решение выражения: {main.getAnswerToExpression(allInput)}')
