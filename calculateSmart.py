@@ -27,7 +27,6 @@ class CalculateSmart(CalculateBasic):
         try:
             if symbol in self.symbolWithOneOperand:
                 num1 = self.arrayNumber.pop()
-                print(f'debug: {symbol=} {num1=}')
                 return self.getSampleAnswer(symbol,num1)
             else:
                 num2 = self.arrayNumber.pop()
@@ -52,14 +51,16 @@ class CalculateSmart(CalculateBasic):
                 self.closeBracket()
                 return
             else:
-                self.handlerError(f'''Неправильно введенное значение в скобках!!! ''')
+                self.handlerError(f'''Что-то не так в скобках!!! ''')
 
         if not self.lastSymbolIsNumber and next_symbol == '-':
             self.arrayNumber.append(0)
+
+        if not self.lastSymbolIsNumber and next_symbol == '!':
+            self.handlerError(f'''Пока не умеем считать субфакториал''')
         
         while len(self.arraySymbol) > 0:
             lastSymbol = self.arraySymbol.pop()
-            print(next_symbol,lastSymbol)
             if self.prioritySymbols(next_symbol) <= self.prioritySymbols(lastSymbol) and next_symbol != '(':
                 result = self._doSymbol(lastSymbol)
                 print(result)

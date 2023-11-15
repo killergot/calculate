@@ -6,8 +6,7 @@ import numpy
 from typing import Union
 
 class CalculateBasic:
-    logErrorInExpression : str = '''Произошла ошибка при вычислении выражения, возможно, вы ввели что-то не так
-    Вот вид ошибки: '''
+    logErrorInExpression : str = '''Error: '''
     def handlerError(self,error : str) -> None:
         self.logErrorInExpression += error
         print(self.logErrorInExpression)
@@ -31,7 +30,7 @@ class CalculateBasic:
         else:
             self.handlerError(f'Деление на ноль: {num1}/{num2}!!!')
     
-    def __divisionWithoutRemainder(self,num1 : Union[int,float], num2 : Union[int,float]) -> int:
+    def __remainderOfDivision(self,num1 : Union[int,float], num2 : Union[int,float]) -> int:
         if (num2 != 0):
             return num1 % num2
         else:
@@ -67,7 +66,7 @@ class CalculateBasic:
             '*' : self.__multiplication,
             '!' : self.__factorial,
             '/' : self.__division,
-            '%' : self.__divisionWithoutRemainder
+            '%' : self.__remainderOfDivision
         }
 
     def getSampleAnswer(self,
