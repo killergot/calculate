@@ -1,5 +1,8 @@
-import numpy as np
 import math
+import decimal
+
+import numpy
+
 from typing import Union
 
 class CalculateBasic:
@@ -15,12 +18,16 @@ class CalculateBasic:
     def __minus(self,num1 : Union[int,float], num2 : Union[int,float]) -> Union[int,float]:
         return num1 - num2
     
-    def __degree(self,num1 : Union[int,float], num2 : Union[int,float]) -> Union[int,float]:
-        return num1 ** num2
+    def __degree(self,num1 : Union[int,float], num2 : Union[int,float]) -> float:
+        num1 = decimal.Decimal(str(num1))
+        num2 = decimal.Decimal(str(num2))
+        return float(num1 ** num2)
     
     def __division(self,num1 : Union[int,float], num2 : Union[int,float]) -> float:
         if (num2 != 0):
-            return num1 / num2
+            num1 = decimal.Decimal(str(num1))
+            num2 = decimal.Decimal(str(num2))
+            return float(num1 / num2)
         else:
             self.handlerError(f'Деление на ноль: {num1}/{num2}!!!')
     
@@ -30,13 +37,17 @@ class CalculateBasic:
         else:
             self.handlerError(f'Деление на ноль: {num1}%{num2}!!!')
 
-    def __multiplication(self,num1 : Union[int,float], num2 : Union[int,float]) -> Union[int,float]:
-        return num1 * num2
+    def __multiplication(self,num1 : Union[int,float], num2 : Union[int,float]) -> float:
+        num1 = decimal.Decimal(str(num1))
+        num2 = decimal.Decimal(str(num2))
+        return float(num1 * num2)
     
     def __factorial(self,num : int,_ : None = None) -> int:
         if num < 0:
             self.handlerError(f'''Пока не умеем строить гамма функции, так что не находим факториал
-отрицательного числа: !({num})''')
+отрицательного числа: ({num})!''')
+        elif not isinstance(num, int):
+            self.handlerError(f'''Факториал нужно брать от целого числа: ({num})!''')
         else:    
             return (math.factorial(num))
         
