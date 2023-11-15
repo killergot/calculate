@@ -59,6 +59,7 @@ class CalculateSmart(CalculateBasic):
         
         while len(self.arraySymbol) > 0:
             lastSymbol = self.arraySymbol.pop()
+            print(next_symbol,lastSymbol)
             if self.prioritySymbols(next_symbol) <= self.prioritySymbols(lastSymbol) and next_symbol != '(':
                 result = self._doSymbol(lastSymbol)
                 print(result)
@@ -70,7 +71,8 @@ class CalculateSmart(CalculateBasic):
                 break
         
         self.arraySymbol.append(next_symbol)
-        self.lastSymbolIsNumber = False
+        if not next_symbol in self.symbolWithOneOperand:
+            self.lastSymbolIsNumber = False
     
     def checkNumber(self,nextNumber : int):
         if self.lastSymbolIsNumber:
@@ -85,6 +87,8 @@ class CalculateSmart(CalculateBasic):
             self.arrayNumber.append(result)
 
     def getAnswerToExpression(self,expression : str) -> Union[int,float,str]:
+        '''Принимает на вход математическое выражение в виде строки.\n
+        На выходе выдает ответ или ошибку, при неверном вводе'''
         for symbol in expression:
             if symbol in ['1','2','3','4','5','6','7','8','9','0','.',',']:
                 self.checkNumber(int(symbol))
