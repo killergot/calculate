@@ -8,6 +8,12 @@ class CalculateSmart(CalculateBasic):
     lastSymbolIsNumber = False
     arraySymbol = []
     
+    def __reset(self) -> None:
+        
+        self.logErrorInExpression = '''Error: '''
+        self.arrayNumber = []
+        self.lastSymbolIsNumber = False
+        self.arraySymbol = []
 
     def prioritySymbols(self,symbol : str) -> int:
         if symbol in ['(']:
@@ -24,18 +30,13 @@ class CalculateSmart(CalculateBasic):
             self.handlerError(f'Неизвеcтный символ: {symbol}')
 
     def _doSymbol(self,symbol : str) -> Union[int,float]:
-        try:
-            if symbol in self.symbolWithOneOperand:
-                num1 = self.arrayNumber.pop()
-                return self.getSampleAnswer(symbol,num1)
-            else:
-                num2 = self.arrayNumber.pop()
-                num1 = self.arrayNumber.pop()
-                print(f'debug: {symbol=} {num1=}, {num2=}')
-                return self.getSampleAnswer(symbol,num1,num2)
-                
-        except:
-            self.handlerError('Что-то не так с вводом символов')
+        if symbol in self.symbolWithOneOperand:
+            num1 = self.arrayNumber.pop()
+            return self.getSampleAnswer(symbol,num1)
+        else:
+            num2 = self.arrayNumber.pop()
+            num1 = self.arrayNumber.pop()
+            return self.getSampleAnswer(symbol,num1,num2)
         
     def closeBracket(self) -> None:
         currentSymbol = self.arraySymbol.pop()
@@ -63,7 +64,6 @@ class CalculateSmart(CalculateBasic):
             lastSymbol = self.arraySymbol.pop()
             if self.prioritySymbols(next_symbol) <= self.prioritySymbols(lastSymbol) and next_symbol != '(':
                 result = self._doSymbol(lastSymbol)
-                print(result)
                 self.arrayNumber.append(result)
             else:
                 self.arraySymbol.append(lastSymbol)
@@ -90,18 +90,26 @@ class CalculateSmart(CalculateBasic):
     def getAnswerToExpression(self,expression : str) -> Union[int,float,str]:
         '''Принимает на вход математическое выражение в виде строки.\n
         На выходе выдает ответ или ошибку, при неверном вводе'''
-        for symbol in expression:
-            if symbol in ['1','2','3','4','5','6','7','8','9','0','.',',']:
-                self.checkNumber(int(symbol))
-            else:
-                self.checkSymbol(symbol)
-        self.doRemainingSymbols()
-        return self.arrayNumber[0]
+        try:
+            for symbol in expression:
+                if symbol in ['1','2','3','4','5','6','7','8','9','0','.',',']:
+                    self.checkNumber(int(symbol))
+                else:
+                    self.checkSymbol(symbol)
+            self.doRemainingSymbols()
+            result = self.arrayNumber[0]
+            self.__reset()
+            return result
+        except:
+            self.__reset()
+            return self.getLog()
 
 
 if __name__ == '__main__':
     main = CalculateSmart()
 
-    allInput = input()
+    while True:
+        inputExpression = input()
+        
 
-    print(f'Вот решение выражения: {main.getAnswerToExpression(allInput)}')
+        print(f'Вот решение выражения: {main.getAnswerToExpression(inputExpression)}')

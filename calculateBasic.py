@@ -9,8 +9,11 @@ class CalculateBasic:
     logErrorInExpression : str = '''Error: '''
     def handlerError(self,error : str) -> None:
         self.logErrorInExpression += error
-        print(self.logErrorInExpression)
         exit()
+
+    def getLog(self) -> str:
+        return self.logErrorInExpression
+
     def __plus(self,num1 : Union[int,float], num2 : Union[int,float]) -> Union[int,float]:
         return num1 + num2
     
